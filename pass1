@@ -1,0 +1,163 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define  max 20
+int loc_ctr=0,starting_add=0,stadd=0;
+
+int check(char label[max])
+{
+    int flag=0,z;
+    char x[max];
+    FILE *fp;
+    fp=fopen("Only Mnemonics.txt","r");
+    while((!feof(fp)))
+    {
+        fscanf(fp,"%s",&x);
+        if((z=strcmp(label,x))==0)
+        {
+            flag=1;
+            break;
+        }
+    }
+    fclose(fp);
+    return flag;
+}
+
+void cal_address(char label[max],char mnemonics[max],char operand[max])
+{
+    int z,x,i,c,j;
+    if(((z=strcmp(mnemonics,"BASE"))==0) || ((z=strcmp(mnemonics,"END"))==0) || ((z=strcmp(mnemonics,"LTORG"))==0))
+        return;
+    else
+    if(((z=strcmp(mnemonics,"CLEAR"))==0) || ((z=strcmp(mnemonics,"COMPR"))==0) || ((z=strcmp(mnemonics,"ADDR"))==0) || ((z=strcmp(mnemonics,"DIVR"))==0) || ((z=strcmp(mnemonics,"TIXR"))==0) || ((z=strcmp(mnemonics,"SUBR"))==0))
+        loc_ctr=loc_ctr+2;
+    else
+    if(((z=strcmp(mnemonics,"MULR"))==0) || ((z=strcmp(mnemonics,"RMO"))==0) || ((z=strcmp(mnemonics,"SHIFTL"))==0) || ((z=strcmp(mnemonics,"SHIFTR"))==0) || ((z=strcmp(mnemonics,"SVC"))==0))
+        loc_ctr=loc_ctr+2;
+    else
+    if((z=strcmp(mnemonics,"RESB"))==0)
+    {
+        z=0;
+        x=strlen(operand);
+        for(i=0;i<x;i++)
+        {
+            c=0;
+            for(j=48;j<58;j++)
+            {
+                if(operand[i]==j)
+                    break;
+                else
+                    c++;
+            }
+            z=z*10+c;
+        }
+        loc_ctr=loc_ctr+z;
+    }
+    else
+    if((z=strcmp(mnemonics,"RESW"))==0)
+    {
+        z=0;
+        x=strlen(operand);
+        for(i=0;i<x;i++)
+        {
+            c=0;
+            for(j=48;j<58;j++)
+            {
+                if(operand[i]==j)
+                    break;
+                else
+                    c++;
+            }
+            z=z*10+c;
+        }
+        loc_ctr=loc_ctr+(3*z);
+    }
+    else
+    if((z=strcmp(mnemonics,"BYTE"))==0)
+    {
+        x=strlen(operand);
+        loc_ctr=loc_ctr+x-3;
+    }
+    else
+    if(mnemonics[0]=='+')
+        loc_ctr=loc_ctr+4;
+    else
+        loc_ctr=loc_ctr+3;
+    stadd=loc_ctr;
+}
+
+void symtab(char label[max],char mnemonics[max],char operand[max])
+{
+    FILE *fp,*fp1;
+    int z;
+    char x[max];
+    fp=fopen("Only Mnemonics.txt","r");
+    while((!feof(fp)))
+    {
+        fscanf(fp,"%s",&x);
+        if((z=strcmp(label,x))==0)
+            return;
+    }
+    fclose(fp);
+    fp1=fopen("SYMTAB.txt","a");
+    fprintf(fp1,"%s\t",label);
+    fprintf(fp1,"%d\n",loc_ctr);
+    fclose(fp1);
+}
+
+int main()
+{
+    FILE *fp,*fp1;
+    int flag,z;
+    char label[max],mnemonics[max],operand[max];
+    fp=fopen("Program6.txt","r");
+    fp1=fopen("Intermediate.txt","a");
+    while((!feof(fp)))
+    {
+        line2:fscanf(fp,"%s",&label);
+        if((z=strcmp(label,"RSUB"))==0)
+        {
+            strcpy(mnemonics,label);
+            printf("%s\n",mnemonics);
+            fprintf(fp1,"%d\t",loc_ctr);
+            fprintf(fp1,"%s\n",mnemonics);
+            goto line4;
+        }
+        if((z=strcmp(label,"LTORG"))==0)
+        {
+            strcpy(mnemonics,label);
+            printf("%s\n",mnemonics);
+            goto line2;
+        }
+        flag=check(label);
+        if(flag==1)
+        {
+            strcpy(mnemonics,label);
+            goto line1;
+        }
+        printf("%s\t",label);
+        fscanf(fp,"%s",&mnemonics);
+        line1:printf("%s\t",mnemonics);
+        if((z=strcmp(mnemonics,"START"))==0)
+        {
+            fscanf(fp,"%d",&loc_ctr);
+            starting_add=loc_ctr;
+            printf("%d\n",loc_ctr);
+            goto line2;
+        }
+        else
+        {
+            fscanf(fp,"%s",&operand);
+            printf("%s\n",operand);
+        }
+        symtab(label,mnemonics,operand);
+        fprintf(fp1,"%d\t",loc_ctr);
+        if(flag==0)
+            fprintf(fp1,"%s\t",label);
+        fprintf(fp1,"%s\t",mnemonics);
+        fprintf(fp1,"%s\n",operand);
+        line4:cal_address(label,mnemonics,operand);
+    }
+    fclose(fp);
+    return 0;
+}
