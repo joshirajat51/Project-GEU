@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define  max 20
+int loc_ctr=0,starting_add=0,stadd=0;
+
+int check(char label[max])
+{
+    int flag=0,z;
+    char x[max];
+    FILE *fp;
+    fp=fopen("Only Mnemonics.txt","r");
+    while((!feof(fp)))
+    {
+        fscanf(fp,"%s",&x);
+        if((z=strcmp(label,x))==0)
+        {
+            flag=1;
+            break;
+        }
+    }
+    fclose(fp);
+    return flag;
+}
+int main()
+{
+    FILE *fp;
+    int flag,z;
+    char label[max],mnemonics[max],operand[max];
+    fp=fopen("Program7.txt","r");
+    while((!feof(fp)))
+    {
+        line2:fscanf(fp,"%s",&label);
+        if((z=strcmp(label,"RSUB"))==0)
+        {
+            strcpy(mnemonics,label);
+            printf("\t%s\n",mnemonics);
+            goto line2;
+        }
+        if((z=strcmp(label,"LTORG"))==0)
+        {
+            strcpy(mnemonics,label);
+            printf("%s\n",mnemonics);
+            goto line2;
+        }
+        flag=check(label);
+        if(flag==1)
+        {
+            strcpy(mnemonics,label);
+            printf("\t%s\t",mnemonics);
+            goto line0;
+        }
+        printf("%s\t",label);
+        fscanf(fp,"%s",&mnemonics);
+        printf("%s\t",mnemonics);
+        if((z=strcmp(mnemonics,"START"))==0)
+        {
+            fscanf(fp,"%d",&loc_ctr);
+            starting_add=loc_ctr;
+            printf("%d\n",loc_ctr);
+            goto line2;
+        }
+        else
+        {
+            line0:fscanf(fp,"%s",&operand);
+            printf("%s\n",operand);
+        }
+
+    }
+    fclose(fp);
+    return 0;
+}
