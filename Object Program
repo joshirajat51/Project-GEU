@@ -1,0 +1,175 @@
+void header()
+{
+    int z,i,temp,c;
+    char x[max];
+    FILE *fp1;
+    fp5=fopen("object program.txt","w");
+    fprintf(fp5,"H^");
+    fp1=fopen("Program5.txt","r");
+    fscanf(fp1,"%s",&x);
+    if((z=strcmp(x,"START"))!=0)
+    {
+        z=strlen(x);
+        if(z<6)
+            z=6-z;
+        fprintf(fp5,"%s",x);
+        for(i=0;i<z;i++)
+            fprintf(fp5," ");
+        fprintf(fp5,"^");
+    }
+    fscanf(fp1,"%s",&x);
+    if((z=strcmp(x,"START"))==0)
+    {
+        fscanf(fp1,"%s",x);
+        z=strlen(x);
+        if(z<6)
+            z=6-z;
+        for(i=0;i<z;i++)
+            fprintf(fp5,"0");
+        fprintf(fp5,"%s^",x);
+    }
+    else
+    {
+        for(i=0;i<6;i++)
+            fprintf(fp5,"0");
+        fprintf(fp5,"^");
+    }
+    stadd=stadd-firstadd;
+    temp=stadd;
+    c=0;
+    while(temp>0)
+    {
+        c++;
+        temp=temp/10;
+    }
+    if(c<6)
+    {
+        c=6-c;
+        for(i=0;i<c;i++)
+            fprintf(fp5,"0");
+    }
+    fprintf(fp5,"%d\n",stadd);
+    fclose(fp1);
+}
+
+void text()
+{
+    FILE *fp,*fp1;
+    char x,y[max];
+    int c,i,z;
+    fp=fopen("object codes.txt","r");
+    fp1=fopen("Intermediate.txt","r");
+    while((!feof(fp)))
+    {
+        line11:c=1;
+        fprintf(fp5,"\n");
+        fprintf(fp5,"T^");
+        fscanf(fp1,"%s",&y);
+        z=strlen(y);
+        if(z<6)
+            z=6-z;
+        for(i=0;i<z;i++)
+            fprintf(fp5,"0");
+        fprintf(fp5,"%s^",y);
+        while(c<=30)
+        {
+            line13:fscanf(fp,"%c",&x);
+            line12:if(x=='*')
+            {
+                return;
+            }
+            if(x=='+')
+            {
+                line15:fscanf(fp,"%c",&x);
+                if(x=='*')
+                    return;
+                if(x=='\n')
+                {
+                    if(c>25)
+                        goto line11;
+                    else
+                        goto line15;
+                }
+                else
+                if(x=='+')
+                    goto line15;
+                else
+                {
+                    fprintf(fp5,"\n");
+                    c=1;
+                    fprintf(fp5,"T^");
+                    fscanf(fp1,"%s",&y);
+                    z=strlen(y);
+                    if(z<6)
+                        z=6-z;
+                    for(i=0;i<z;i++)
+                        fprintf(fp5,"0");
+                    fprintf(fp5,"%s^",y);
+                }
+            }
+            if(x=='\n')
+            {
+                if(c>25)
+                    goto line11;
+                else
+                {
+                    fscanf(fp1,"%s",&y);
+                    fprintf(fp5,"^");
+                }
+            }
+            else
+            {
+                fprintf(fp5,"%c",x);
+                c++;
+            }
+        }
+        fprintf(fp5,"\n");
+        fscanf(fp,"%c",&x);
+        if(x=='\n')
+            goto line11;
+        else
+        {
+            c=1;
+            fprintf(fp5,"T^");
+            fscanf(fp1,"%s",&y);
+            z=strlen(y);
+            if(z<6)
+                z=6-z;
+            for(i=0;i<z;i++)
+                fprintf(fp5,"0");
+            fprintf(fp5,"%s^",y);
+            goto line12;
+        }
+    }
+    fclose(fp);
+    fclose(fp5);
+}
+
+void end()
+{
+    int c=0,temp,i;
+    temp=firstadd;
+    fprintf(fp5,"\nE^");
+    while(temp>0)
+    {
+        c++;
+        temp=temp/10;
+    }
+    if(c<6)
+    {
+        c=6-c;
+
+        for(i=0;i<c;i++)
+            fprintf(fp5,"0");
+    }
+    if(firstadd!=0)
+        fprintf(fp5,"%d",firstadd);
+    fclose(fp5);
+}
+
+void program()
+{
+    header();
+    text();
+    end();
+}
