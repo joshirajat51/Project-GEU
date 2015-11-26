@@ -1,0 +1,88 @@
+void finalloader()
+{
+    FILE *fp,*fp1,*fp2;
+    char x[max],y;
+    int z,i,c;
+    fp=fopen("FINAL_LOADER.txt","w");
+    fp1=fopen("LOADER.txt","r");
+    fp2=fopen("LOADER2.txt","r");
+    while((!feof(fp1)))
+    {
+        fscanf(fp2,"%s",&x);
+        z=strlen(x);
+        if(z<4)
+        {
+            z=4-z;
+            for(i=0;i<z;i++)
+                fprintf(fp,"0");
+        }
+        fprintf(fp,"%s\t",x);
+        c=0;
+        while(c<32)
+        {
+            line21:fscanf(fp1,"%c",&y);
+            if(y=='\n')
+                goto line21;
+            if(y=='*')
+            {
+                fclose(fp);
+                fclose(fp1);
+                fclose(fp2);
+               return;
+            }
+            fprintf(fp,"%c",y);
+            c++;
+        }
+        fprintf(fp,"\n");
+    }
+}
+
+void loader2()
+{
+    FILE *fp;
+    int temp;
+    fp=fopen("LOADER2.txt","w");
+    temp=firstadd;
+    while(temp<stadd)
+    {
+        fprintf(fp,"%d\n",temp);
+        temp=temp+16;
+    }
+    fclose(fp);
+    finalloader();
+}
+
+void loader()
+{
+    FILE *fp,*fp1,*fp2;
+    int i,z,x,u;
+    char y[max],q[max],w[max];
+    fp=fopen("LOADER.txt","w");
+    fp1=fopen("Intermediate.txt","r");
+    fp2=fopen("object codes.txt","r");
+    while((!feof(fp2)))
+    {
+        fscanf(fp2,"%s",&y);
+        if((z=strcmp(y,"+"))==0)
+        {
+            fscanf(fp1,"%d",&x);
+            fscanf(fp1,"%d",&u);
+            for(i=x;i<u*2;i++)
+                fprintf(fp,"X");
+            fprintf(fp,"\n");
+        }
+        else
+        if((z=strcmp(y,"*"))==0)
+            break;
+        else
+        {
+            fprintf(fp,"%s\n",y);
+            fscanf(fp1,"%d",&x);
+        }
+    }
+    fprintf(fp,"*");
+    fclose(fp);
+    fclose(fp1);
+    fclose(fp2);
+    loader2();
+}
