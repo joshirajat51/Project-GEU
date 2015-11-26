@@ -1,0 +1,599 @@
+void opcodes(char label[max],char mnemonics[max],char operand[max])
+{
+    check_symtab();
+    FILE *fp,*fp2;
+    int z,i,j;
+    char empty,x[max],y[max];
+    empty='\n';
+    fp2=fopen("object codes.txt","a");
+
+    void findmne(char mnemonics[max])
+    {
+        FILE *fp;
+        int z;
+        char monics[max];
+        fp=fopen("opcodes.txt","r");
+        while((!feof(fp)))
+        {
+            fscanf(fp,"%s",&monics);
+            if((z=strcmp(mnemonics,monics))==0)
+            {
+                fscanf(fp,"%s",&monics);
+                fprintf(fp2,"%s",monics);
+                break;
+            }
+        }
+        fclose(fp);
+    }
+
+    void findadd(char operand[max])
+    {
+        FILE *fp;
+        int z;
+        char addr[max];
+        fp=fopen("SYMTAB_FINAL.txt","r");
+        while((!feof(fp)))
+        {
+            fscanf(fp,"%s",&addr);
+            if((z=strcmp(addr,operand))==0)
+            {
+                fscanf(fp,"%s",&addr);
+                fprintf(fp2,"%s\n",addr);
+                break;
+            }
+        }
+        fclose(fp);
+    }
+
+    if(((z=strcmp(mnemonics,"START"))==0) || ((z=strcmp(mnemonics,"*"))==0) || ((z=strcmp(mnemonics,"BASE"))==0))
+        return;
+    else
+    if(((z=strcmp(mnemonics,"END"))==0))
+        goto line12;
+    else
+    if(((z=strcmp(mnemonics,"RESW"))==0))
+        fprintf(fp2,"+\n");
+    else
+    if(((z=strcmp(mnemonics,"RESB"))==0))
+    fprintf(fp2,"+\n");
+    else
+    if(((z=strcmp(mnemonics,"RSUB"))==0))
+    {
+        findmne(mnemonics);
+        strcpy(operand,"0000");
+        fprintf(fp2,"%s\n",operand);
+    }
+    else
+    if((z=strcmp(mnemonics,"WORD"))==0)
+    {
+        z=strlen(operand);
+        if(z<6);
+        z=6-z;
+        for(i=0;i<z;i++)
+            fprintf(fp2,"0");
+        fprintf(fp2,"%s\n",operand);
+    }
+    else
+    if(((z=strcmp(mnemonics,"BYTE"))==0))
+    {
+        z=strlen(operand);
+        for(i=2;i<z-1;i++)
+            fprintf(fp2,"%c",operand[i]);
+        fprintf(fp2,"\n",empty);
+    }
+    else
+    if(((z=strcmp(mnemonics,"CLEAR"))==0))
+    {
+        findmne(mnemonics);
+        if(operand[0]=='A')
+            fprintf(fp2,"00\n",empty);
+        if(operand[0]=='X')
+            fprintf(fp2,"10\n",empty);
+        if(operand[0]=='S')
+            fprintf(fp2,"40\n",empty);
+        if(operand[0]=='T')
+            fprintf(fp2,"50\n",empty);
+        if(operand[0]=='L')
+            fprintf(fp2,"20\n",empty);
+        if(operand[0]=='B')
+            fprintf(fp2,"30\n",empty);
+        if(operand[0]=='F')
+            fprintf(fp2,"60\n",empty);
+    }
+    else
+    if(((z=strcmp(mnemonics,"TIXR"))==0))
+    {
+        findmne(mnemonics);
+        if(operand[0]=='A')
+            fprintf(fp2,"00\n",empty);
+        if(operand[0]=='X')
+            fprintf(fp2,"10\n",empty);
+        if(operand[0]=='S')
+            fprintf(fp2,"40\n",empty);
+        if(operand[0]=='T')
+            fprintf(fp2,"50\n",empty);
+        if(operand[0]=='L')
+            fprintf(fp2,"20\n",empty);
+        if(operand[0]=='B')
+            fprintf(fp2,"30\n",empty);
+        if(operand[0]=='F')
+            fprintf(fp2,"60\n",empty);
+    }
+    else
+    if(((z=strcmp(mnemonics,"COMPR"))==0) || ((z=strcmp(mnemonics,"ADDR"))==0))
+    {
+        findmne(mnemonics);
+        if(operand[0]=='A')
+            fprintf(fp2,"0",empty);
+        if(operand[0]=='X')
+            fprintf(fp2,"1",empty);
+        if(operand[0]=='S')
+            fprintf(fp2,"4",empty);
+        if(operand[0]=='T')
+            fprintf(fp2,"5",empty);
+        if(operand[0]=='L')
+            fprintf(fp2,"2",empty);
+        if(operand[0]=='B')
+            fprintf(fp2,"3",empty);
+        if(operand[0]=='F')
+            fprintf(fp2,"6",empty);
+        if(operand[2]=='A')
+            fprintf(fp2,"0\n",empty);
+        if(operand[2]=='X')
+            fprintf(fp2,"1\n",empty);
+        if(operand[2]=='S')
+            fprintf(fp2,"4\n",empty);
+        if(operand[2]=='T')
+            fprintf(fp2,"5\n",empty);
+        if(operand[2]=='L')
+            fprintf(fp2,"2\n",empty);
+        if(operand[2]=='B')
+            fprintf(fp2,"3\n",empty);
+        if(operand[2]=='F')
+            fprintf(fp2,"6\n",empty);
+    }
+    else
+    if(operand[0]=='#')
+    {
+        findmne(mnemonics);
+        if(operand[1]>='0' && operand[1]<'9')
+        {
+            z=strlen(operand);
+            if(z<5)
+            {
+                z=4-z+1;
+                for(i=0;i<z;i++)
+                {
+                    fprintf(fp2,"0");
+                }
+            }
+            z=strlen(operand);
+            for(i=1;i<z;i++)
+                fprintf(fp2,"%c",operand[i]);
+            fprintf(fp2,"\n",empty);
+        }
+        else
+        {
+            z=strlen(operand);
+            for(i=1,j=0;i<z;i++,j++)
+                y[j]=operand[i];
+            fp=fopen("SYMTAB_FINAL.txt","r");
+            while((!feof(fp)))
+            {
+                fscanf(fp,"%s",&x);
+                if((z=strcmp(y,x))==0)
+                {
+                    fscanf(fp,"%s",&x);
+                    fprintf(fp2,"%s\n",x);
+                    break;
+                }
+            }
+            fclose(fp);
+        }
+    }
+    else
+    if(operand[0]=='@')
+    {
+        findmne(mnemonics);
+        z=strlen(operand);
+        for(i=1,j=0;i<z;i++,j++)
+            y[j]=operand[i];
+        fp=fopen("SYMTAB_FINAL.txt","r");
+        while((!feof(fp)))
+        {
+            fscanf(fp,"%s",&x);
+            if((z=strcmp(y,x))==0)
+            {
+                fscanf(fp,"%s",&x);
+                fprintf(fp2,"%s\n",x);
+                break;
+            }
+        }
+        fclose(fp);
+    }
+    else
+    {
+        findmne(mnemonics);
+        z=strlen(operand);
+        if(operand[z-1]=='X')
+        {
+            for(i=0;i<z-2;i++)
+                y[i]=operand[i];
+            fp=fopen("SYMTAB_FINAL.txt","r");
+            while((!feof(fp)))
+            {
+                fscanf(fp,"%s",&x);
+                if((z=strcmp(y,x))==0)
+                {
+                    fscanf(fp,"%s",&x);
+                    fprintf(fp2,"%s\n",x);
+                    break;
+                }
+            }
+            fclose(fp);
+        }
+        else
+        if(operand[0]=='=')
+        {
+            z=strlen(operand);
+            for(i=3;i<z-1;i++)
+                fprintf(fp2,"%c",operand[i]);
+            fprintf(fp2,"\n");
+        }
+        else
+        if(operand[0]=='X' || (operand[0]=='C' && operand[1]!='L'))
+        {
+            z=strlen(operand);
+            for(i=2;i<z-1;i++)
+                fprintf(fp2,"%c",operand[i]);
+            fprintf(fp2,"\n");
+        }
+        else
+            findadd(operand);
+    }
+    line12:if((z=strcmp(label,"END"))==0)
+        fprintf(fp2,"*");
+    fclose(fp2);
+}
+
+void codes()
+{
+    FILE *fp;
+    int flag,z;
+    char label[max],mnemonics[max],operand[max];
+    fp=fopen("Program5.txt","r");
+    while((!feof(fp)))
+    {
+        line5:fscanf(fp,"%s",&label);
+        if((z=strcmp(label,"RSUB"))==0)
+        {
+            strcpy(mnemonics,label);
+            goto line7;
+        }
+        if((z=strcmp(label,"LTORG"))==0)
+        {
+            strcpy(mnemonics,label);
+            goto line5;
+        }
+        flag=check(label);
+        if(flag==1)
+        {
+            strcpy(mnemonics,label);
+            goto line6;
+        }
+        fscanf(fp,"%s",&mnemonics);
+        if((z=strcmp(mnemonics,"START"))==0)
+        {
+            fscanf(fp,"%d",&starting_add);
+            goto line5;
+        }
+        else
+            line6:fscanf(fp,"%s",&operand);
+        line7:opcodes(label,mnemonics,operand);
+    }
+    fclose(fp);
+}
+
+FILE *fp5;
+
+void header()
+{
+    int z,i,temp,c;
+    char x[max];
+    FILE *fp1;
+    fp5=fopen("object program.txt","w");
+    fprintf(fp5,"H^");
+    fp1=fopen("Program5.txt","r");
+    fscanf(fp1,"%s",&x);
+    if((z=strcmp(x,"START"))!=0)
+    {
+        z=strlen(x);
+        if(z<6)
+            z=6-z;
+        fprintf(fp5,"%s",x);
+        for(i=0;i<z;i++)
+            fprintf(fp5," ");
+        fprintf(fp5,"^");
+    }
+    fscanf(fp1,"%s",&x);
+    if((z=strcmp(x,"START"))==0)
+    {
+        fscanf(fp1,"%s",x);
+        z=strlen(x);
+        if(z<6)
+            z=6-z;
+        for(i=0;i<z;i++)
+            fprintf(fp5,"0");
+        fprintf(fp5,"%s^",x);
+    }
+    else
+    {
+        for(i=0;i<6;i++)
+            fprintf(fp5,"0");
+        fprintf(fp5,"^");
+    }
+    stadd=stadd-firstadd;
+    temp=stadd;
+    c=0;
+    while(temp>0)
+    {
+        c++;
+        temp=temp/10;
+    }
+    if(c<6)
+    {
+        c=6-c;
+        for(i=0;i<c;i++)
+            fprintf(fp5,"0");
+    }
+    fprintf(fp5,"%d\n",stadd);
+    fclose(fp1);
+}
+
+void text()
+{
+    FILE *fp,*fp1;
+    char x,y[max];
+    int c,i,z;
+    fp=fopen("object codes.txt","r");
+    fp1=fopen("Intermediate.txt","r");
+    while((!feof(fp)))
+    {
+        line11:c=1;
+        fprintf(fp5,"\n");
+        fprintf(fp5,"T^");
+        fscanf(fp1,"%s",&y);
+        z=strlen(y);
+        if(z<6)
+            z=6-z;
+        for(i=0;i<z;i++)
+            fprintf(fp5,"0");
+        fprintf(fp5,"%s^",y);
+        while(c<=30)
+        {
+            line13:fscanf(fp,"%c",&x);
+            line12:if(x=='*')
+            {
+                return;
+            }
+            if(x=='+')
+            {
+                line15:fscanf(fp,"%c",&x);
+                if(x=='*')
+                    return;
+                if(x=='\n')
+                {
+                    if(c>25)
+                        goto line11;
+                    else
+                        goto line15;
+                }
+                else
+                if(x=='+')
+                    goto line15;
+                else
+                {
+                    fprintf(fp5,"\n");
+                    c=1;
+                    fprintf(fp5,"T^");
+                    fscanf(fp1,"%s",&y);
+                    z=strlen(y);
+                    if(z<6)
+                        z=6-z;
+                    for(i=0;i<z;i++)
+                        fprintf(fp5,"0");
+                    fprintf(fp5,"%s^",y);
+                }
+            }
+            if(x=='\n')
+            {
+                if(c>25)
+                    goto line11;
+                else
+                {
+                    fscanf(fp1,"%s",&y);
+                    fprintf(fp5,"^");
+                }
+            }
+            else
+            {
+                fprintf(fp5,"%c",x);
+                c++;
+            }
+        }
+        fprintf(fp5,"\n");
+        fscanf(fp,"%c",&x);
+        if(x=='\n')
+            goto line11;
+        else
+        {
+            c=1;
+            fprintf(fp5,"T^");
+            fscanf(fp1,"%s",&y);
+            z=strlen(y);
+            if(z<6)
+                z=6-z;
+            for(i=0;i<z;i++)
+                fprintf(fp5,"0");
+            fprintf(fp5,"%s^",y);
+            goto line12;
+        }
+    }
+    fclose(fp);
+    fclose(fp5);
+}
+
+void end()
+{
+    int c=0,temp,i;
+    temp=firstadd;
+    fprintf(fp5,"\nE^");
+    while(temp>0)
+    {
+        c++;
+        temp=temp/10;
+    }
+    if(c<6)
+    {
+        c=6-c;
+
+        for(i=0;i<c;i++)
+            fprintf(fp5,"0");
+    }
+    if(firstadd!=0)
+        fprintf(fp5,"%d",firstadd);
+    fclose(fp5);
+}
+
+void program()
+{
+    header();
+    text();
+    end();
+}
+
+void intermediate()
+{
+    FILE *fp,*fp1,*fp2;
+    char x[max];
+    int z,i,flag,c=0,d=0,e=0;
+    fp=fopen("Intermediate.txt","r");
+    while((!feof(fp)))
+    {
+        fscanf(fp,"%s",&x);
+        d++;
+    }
+    fclose(fp);
+    fp=fopen("Intermediate.txt","r");
+    fp2=fopen("Program5.txt","r");
+    fp1=fopen("Intermediate_Final.txt","w");
+    while((!feof(fp)))
+    {
+        if(c==0)
+        {
+            for(i=0;i<3;i++)
+                fscanf(fp2,"%s",&x);
+            e++;
+            c++;
+        }
+        line8:fscanf(fp,"%s",&x);
+        z=strlen(x);
+        if(z<4)
+        {
+            z=4-z;
+            for(i=0;i<z;i++)
+                fprintf(fp1,"0");
+        }
+        fprintf(fp1,"%s\t",x);
+        fscanf(fp2,"%s",&x);
+        flag=check(x);
+        if(flag==1)
+        {
+            if((z=strcmp(x,"RSUB"))==0)
+            {
+                fprintf(fp1,"%s\n",x);
+                e++;
+                goto line8;
+            }
+            else
+                fprintf(fp1,"%s\t",x);
+        }
+        else
+        {
+            fprintf(fp1,"%s\t",x);
+            fscanf(fp2,"%s",&x);
+            fprintf(fp1,"%s\t",x);
+        }
+        fscanf(fp2,"%s",&x);
+        fprintf(fp1,"%s\n",x);
+        e++;
+        if(e==d)
+            break;
+    }
+    fclose(fp);
+    fclose(fp1);
+    fclose(fp2);
+}
+
+void intermediate()
+{
+    FILE *fp,*fp1,*fp2;
+    char x[max];
+    int z,i,flag,c=0,d=0,e=0;
+    fp=fopen("Intermediate.txt","r");
+    while((!feof(fp)))
+    {
+        fscanf(fp,"%s",&x);
+        d++;
+    }
+    fclose(fp);
+    fp=fopen("Intermediate.txt","r");
+    fp2=fopen("Program5.txt","r");
+    fp1=fopen("Intermediate_Final.txt","w");
+    while((!feof(fp)))
+    {
+        if(c==0)
+        {
+            for(i=0;i<3;i++)
+                fscanf(fp2,"%s",&x);
+            e++;
+            c++;
+        }
+        line8:fscanf(fp,"%s",&x);
+        z=strlen(x);
+        if(z<4)
+        {
+            z=4-z;
+            for(i=0;i<z;i++)
+                fprintf(fp1,"0");
+        }
+        fprintf(fp1,"%s\t",x);
+        fscanf(fp2,"%s",&x);
+        flag=check(x);
+        if(flag==1)
+        {
+            if((z=strcmp(x,"RSUB"))==0)
+            {
+                fprintf(fp1,"%s\n",x);
+                e++;
+                goto line8;
+            }
+            else
+                fprintf(fp1,"%s\t",x);
+        }
+        else
+        {
+            fprintf(fp1,"%s\t",x);
+            fscanf(fp2,"%s",&x);
+            fprintf(fp1,"%s\t",x);
+        }
+        fscanf(fp2,"%s",&x);
+        fprintf(fp1,"%s\n",x);
+        e++;
+        if(e==d)
+            break;
+    }
+    fclose(fp);
+    fclose(fp1);
+    fclose(fp2);
+}
