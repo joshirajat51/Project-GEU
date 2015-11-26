@@ -1,0 +1,175 @@
+void intermediate()
+{
+    FILE *fp,*fp1,*fp2;
+    char x[max];
+    int z,i,flag,c=0,d=0,e=0;
+    fp=fopen("Intermediate.txt","r");
+    while((!feof(fp)))
+    {
+        fscanf(fp,"%s",&x);
+        d++;
+    }
+    fclose(fp);
+    fp=fopen("Intermediate.txt","r");
+    fp2=fopen("Program5.txt","r");
+    fp1=fopen("Intermediate_Final.txt","w");
+    while((!feof(fp)))
+    {
+        if(c==0)
+        {
+            for(i=0;i<3;i++)
+                fscanf(fp2,"%s",&x);
+            e++;
+            c++;
+        }
+        line8:fscanf(fp,"%s",&x);
+        z=strlen(x);
+        if(z<4)
+        {
+            z=4-z;
+            for(i=0;i<z;i++)
+                fprintf(fp1,"0");
+        }
+        fprintf(fp1,"%s\t",x);
+        fscanf(fp2,"%s",&x);
+        flag=check(x);
+        if(flag==1)
+        {
+            if((z=strcmp(x,"RSUB"))==0)
+            {
+                fprintf(fp1,"%s\n",x);
+                e++;
+                goto line8;
+            }
+            else
+                fprintf(fp1,"%s\t",x);
+        }
+        else
+        {
+            fprintf(fp1,"%s\t",x);
+            fscanf(fp2,"%s",&x);
+            fprintf(fp1,"%s\t",x);
+        }
+        fscanf(fp2,"%s",&x);
+        fprintf(fp1,"%s\n",x);
+        e++;
+        if(e==d)
+            break;
+    }
+    fclose(fp);
+    fclose(fp1);
+    fclose(fp2);
+}
+
+int checkstart()
+{
+    FILE *fp;
+    char x[max];
+    int flag=2,z;
+    fp=fopen("Program5.txt","r");
+    while((!feof(fp)))
+    {
+        fscanf(fp,"%s",&x);
+        if((z=strcmp(x,"START"))==0)
+        {
+            flag=1;
+            return flag;
+        }
+    }
+    fclose(fp);
+    return flag;
+}
+
+int checkend()
+{
+    FILE *fp;
+    char x[max];
+    int flag=2,z;
+    fp=fopen("Program5.txt","r");
+    while((!feof(fp)))
+    {
+        fscanf(fp,"%s",&x);
+        if((z=strcmp(x,"END"))==0)
+        {
+            flag=1;
+            return flag;
+        }
+    }
+    fclose(fp);
+    return flag;
+}
+
+int main()
+{
+    FILE *fp,*fp1;
+    int flag,z;
+    char label[max],mnemonics[max],operand[max];
+    flag=checkstart();
+    if(flag==2)
+    {
+        printf("Error : START not found.");
+        return 0;
+    }
+    flag=checkend();
+    if(flag==2)
+    {
+        printf("Error : END not found.");
+        return 0;
+    }
+    else
+    {
+        fp=fopen("Program5.txt","r");
+        fp1=fopen("Intermediate.txt","a");
+        while((!feof(fp)))
+        {
+            line2:fscanf(fp,"%s",&label);
+            if((z=strcmp(label,"RSUB"))==0)
+            {
+                strcpy(mnemonics,label);
+                printf("%s\n",mnemonics);
+                fprintf(fp1,"%d\n",starting_add);
+                goto line4;
+            }
+            if((z=strcmp(label,"LTORG"))==0)
+            {
+                strcpy(mnemonics,label);
+                printf("%s\n",mnemonics);
+                goto line2;
+            }
+            flag=check(label);
+            if(flag==1)
+            {
+                strcpy(mnemonics,label);
+                goto line1;
+            }
+            printf("%s\t",label);
+            fscanf(fp,"%s",&mnemonics);
+            line1:printf("%s\t",mnemonics);
+            if((z=strcmp(mnemonics,"START"))==0)
+            {
+                fscanf(fp,"%d",&starting_add);
+                firstadd=starting_add;
+                printf("%d\n",starting_add);
+                goto line2;
+            }
+            else
+            {
+                fscanf(fp,"%s",&operand);
+                printf("%s\n",operand);
+            }
+            symtab(label,mnemonics,operand);
+            fprintf(fp1,"%d\n",starting_add);
+            line4:cal_address(label,mnemonics,operand);
+            if((z=strcmp(mnemonics,"END"))==0)
+            {
+                fclose(fp1);
+                intermediate();
+                codes();
+                loader();
+                program();
+            }
+        }
+        fclose(fp);
+    }
+    line22:return 0;
+}
